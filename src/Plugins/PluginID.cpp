@@ -1,1 +1,1 @@
-#include "XP++/Plugin/PluginID.hpp"
+#include "XP++/Plugins/PluginID.hpp"

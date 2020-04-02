@@ -99,8 +99,8 @@ namespace XP
 	class Message final
 	{
 	public:
-		Message();
-		~Message();
+		Message(int id, void* data);
+		~Message()									= default;
 		Message(const Message&)						= default;
 		Message& Message::operator=(const Message&) = default;
 
