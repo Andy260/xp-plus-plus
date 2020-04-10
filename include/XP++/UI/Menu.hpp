@@ -21,8 +21,6 @@ namespace XP
 	public:
 		friend MenuItem;
 
-		~Menu();
-
 		/// <summary>
 		/// Gets the name of this menu
 		/// </summary>
@@ -127,6 +125,8 @@ namespace XP
 		Menu(std::string name,
 			 std::weak_ptr<MenuItem> parentMenuItem,
 			 void* id);
+		~Menu();
+
 		Menu(const Menu&)					= delete;
 		Menu& Menu::operator=(const Menu&)	= delete;
 

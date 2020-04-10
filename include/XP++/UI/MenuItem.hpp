@@ -44,8 +44,6 @@ namespace XP
 	public:
 		friend Menu;
 
-		~MenuItem();
-
 		/// <summary>
 		/// Appends a new MenuItem to the menu bar of X-Plane
 		/// </summary>
@@ -55,7 +53,10 @@ namespace XP
 		inline static std::shared_ptr<MenuItem> AppendToMenubar(std::string name, 
 																std::function<void(MenuItem&)> onClick)
 		{
-			std::shared_ptr<MenuItem> menuItem(new MenuItem(std::weak_ptr<Menu>(), name, onClick));
+			std::shared_ptr<MenuItem> menuItem(new MenuItem(std::weak_ptr<Menu>(), name, onClick), [](MenuItem* menuItem)
+			{
+				delete menuItem;
+			});
 			m_menuItems.push_back(menuItem);
 
 			return menuItem;
@@ -177,6 +178,8 @@ namespace XP
 		MenuItem(std::weak_ptr<Menu> menu,
 				 std::string name,
 				 std::function<void(MenuItem&)> onClick);
+		~MenuItem();
+
 		MenuItem(const MenuItem&)						= delete;
 		MenuItem& MenuItem::operator=(const MenuItem&)	= delete;
 

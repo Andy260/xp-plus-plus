@@ -69,7 +69,10 @@ std::shared_ptr<XP::Menu> XP::MenuItem::CreateChildMenu(std::string name)
 	}
 
 	// Create Child Menu
-	m_childMenu = std::shared_ptr<Menu>(new Menu(name, (*thisMenuInList)));
+	m_childMenu = std::shared_ptr<Menu>(new Menu(name, (*thisMenuInList)), [](Menu* menu)
+	{
+		delete menu;
+	});
 
 	// Add created child menu to master list
 	Menu::m_menus.push_back(m_childMenu);

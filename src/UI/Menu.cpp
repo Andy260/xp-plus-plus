@@ -67,7 +67,10 @@ std::weak_ptr<XP::Menu> XP::Menu::FindAircraftMenu()
 std::shared_ptr<XP::MenuItem> XP::Menu::AppendMenuItem(std::string name, std::function<void(MenuItem&)> onClick)
 {
 	// Create Menu Item
-	std::shared_ptr<MenuItem> menuItem(new MenuItem(GetPtrToThisMenu(), name, onClick));
+	std::shared_ptr<MenuItem> menuItem(new MenuItem(GetPtrToThisMenu(), name, onClick), [](MenuItem* menuItem)
+	{
+		delete menuItem;
+	});
 	m_menuItems.push_back(menuItem);
 
 	// Add created menu item to master list
@@ -134,7 +137,10 @@ std::shared_ptr<XP::Menu> XP::Menu::CreateAircraftMenu()
 	// Create XP++ object representing the menu
 	std::shared_ptr<Menu>menu(new Menu("Aircraft",
 										  std::weak_ptr<MenuItem>(),
-										  static_cast<void*>(menuID)));
+									   static_cast<void*>(menuID)), [](Menu* menu)
+	{
+		delete menu;
+	});
 	// Add created menu to master list
 	m_menus.push_back(menu);
 
@@ -149,7 +155,10 @@ std::shared_ptr<XP::Menu> XP::Menu::CreatePluginsMenu()
 	// Create XP++ object representing the menu
 	std::shared_ptr<Menu> menu(new Menu("Plugins",
 										std::weak_ptr<MenuItem>(),
-										static_cast<void*>(menuID)));
+										static_cast<void*>(menuID)), [](Menu* menu)
+	{
+		delete menu;
+	});
 	// Add created menu to master list
 	m_menus.push_back(menu);
 
