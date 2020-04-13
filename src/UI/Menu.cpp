@@ -11,7 +11,7 @@
 // X-Plane SDK includes
 #include "XPLMMenus.h"
 
-std::list<std::shared_ptr<XP::Menu>> XP::Menu::m_menus;
+std::list<std::weak_ptr<XP::Menu>> XP::Menu::m_menus;
 
 XP::Menu::Menu(std::string name, std::weak_ptr<MenuItem> parentMenuItem) :
 	m_menuItems(), m_id(nullptr), m_parentMenuItem(parentMenuItem.lock()), m_name(name)
@@ -102,10 +102,25 @@ void XP::Menu::RemoveMenuItem(std::weak_ptr<MenuItem> menuItem)
 	// Ensure given argument isn't NULL
 	if (!menuItem.expired())
 	{
+		std::shared_ptr<MenuItem> lockedItem = menuItem.lock();
+
 		// Remove given argument
-		std::shared_ptr<MenuItem> lockedMenuItem = menuItem.lock();
-		auto firstReturnVal		= std::remove(m_menuItems.begin(), m_menuItems.end(), lockedMenuItem);
-		auto secondReturnVal	= std::remove(XP::MenuItem::m_menuItems.begin(), XP::MenuItem::m_menuItems.end(), lockedMenuItem);
+		auto firstReturnVal = std::remove_if(m_menuItems.begin(), m_menuItems.end(), [lockedItem](const std::shared_ptr<MenuItem>& menuItemToRemove)
+		{
+			return lockedItem == menuItemToRemove;
+		});
+		auto secondReturnVal = std::remove_if(XP::MenuItem::m_menuItems.begin(), XP::MenuItem::m_menuItems.end(), [lockedItem](const std::weak_ptr<MenuItem>& menuItemToRemove)
+		{
+			if (menuItemToRemove.expired())
+			{
+				return false;
+			}
+			else
+			{
+				std::shared_ptr<MenuItem> lockedItemToDelete = menuItemToRemove.lock();
+				return lockedItem == lockedItemToDelete;
+			}
+		});
 	}
 }
 
@@ -117,9 +132,17 @@ void XP::Menu::ClearAllMenuItems()
 std::shared_ptr<XP::Menu> XP::Menu::GetPtrToThisMenu() const
 {
 	// Find pointer to this menu
-	auto pointerItr = std::find_if(m_menus.begin(), m_menus.end(), [this](const std::shared_ptr<Menu>& menu)
+	auto pointerItr = std::find_if(m_menus.begin(), m_menus.end(), [this](const std::weak_ptr<Menu>& menu)
 	{
-		return menu.get() == this;
+		if (menu.expired())
+		{
+			return false;
+		}
+		else 
+		{
+			std::shared_ptr<Menu> lockedMenu = menu.lock();
+			return lockedMenu.get() == this;
+		}
 	});
 	// Ensure we found a pointer
 	if (pointerItr == m_menus.end())
@@ -127,7 +150,7 @@ std::shared_ptr<XP::Menu> XP::Menu::GetPtrToThisMenu() const
 		throw std::exception("Unable to find pointer to this menu");
 	}
 
-	return (*pointerItr);
+	return (*pointerItr).lock();
 }
 
 std::shared_ptr<XP::Menu> XP::Menu::CreateAircraftMenu()

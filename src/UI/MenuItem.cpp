@@ -11,7 +11,7 @@
 #include "XP++/Exceptions/XPException.hpp"
 //#include "XP++/Commands/Command.hpp"
 
-std::list<std::shared_ptr<XP::MenuItem>> XP::MenuItem::m_menuItems;
+std::list<std::weak_ptr<XP::MenuItem>> XP::MenuItem::m_menuItems;
 
 XP::MenuItem::MenuItem(std::weak_ptr<Menu> menu,
 					   std::string name,
@@ -58,9 +58,17 @@ std::shared_ptr<XP::Menu> XP::MenuItem::CreateChildMenu(std::string name)
 {
 	// Find this MenuItem's shared pointer
 	auto thisMenuInList = std::find_if(m_menuItems.begin(), m_menuItems.end(),
-									   [this](const std::shared_ptr<MenuItem>& menuItem)
+									   [this](const std::weak_ptr<MenuItem>& menuItem)
 	{
-		return menuItem.get() == this;
+		if (menuItem.expired())
+		{
+			return false;
+		}
+		else
+		{
+			std::shared_ptr<MenuItem> lockedMenuItem = menuItem.lock();
+			return lockedMenuItem.get() == this;
+		}
 	});
 	// Ensure this MenuItem's shared pointer exists within list
 	if (thisMenuInList == m_menuItems.end())
@@ -83,9 +91,17 @@ std::shared_ptr<XP::Menu> XP::MenuItem::CreateChildMenu(std::string name)
 void XP::MenuItem::DestroyChildMenu()
 {
 	// Remove child menu from master list
-	auto returnVal = std::remove_if(Menu::m_menus.begin(), Menu::m_menus.end(), [&](const std::shared_ptr<Menu>& menu)
+	auto returnVal = std::remove_if(Menu::m_menus.begin(), Menu::m_menus.end(), [&](const std::weak_ptr<Menu>& menu)
 	{
-		return menu.get() == m_childMenu.get();
+		if (menu.expired())
+		{
+			return false;
+		}
+		else
+		{
+			std::shared_ptr<Menu> lockedMenu = menu.lock();
+			return lockedMenu == m_childMenu;
+		}
 	});
 
 	// Destroy child menu

@@ -200,6 +200,6 @@ namespace XP
 		std::function<void(MenuItem&)> m_onClick;
 
 		// Created MenuItems
-		static std::list<std::shared_ptr<MenuItem>> m_menuItems;
+		static std::list<std::weak_ptr<MenuItem>> m_menuItems;
 	};
 }

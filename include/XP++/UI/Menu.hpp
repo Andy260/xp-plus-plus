@@ -140,7 +140,7 @@ namespace XP
 		std::string m_name;
 
 		// All created menus
-		static std::list<std::shared_ptr<Menu>> m_menus;
+		static std::list<std::weak_ptr<Menu>> m_menus;
 
 		// Finds the shared pointer to this menu
 		std::shared_ptr<Menu> GetPtrToThisMenu() const;
