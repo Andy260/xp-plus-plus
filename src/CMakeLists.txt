@@ -12,18 +12,26 @@ target_include_directories(XPPlusPlus
 
 # Add headers for source files within this folder
 target_sources(XPPlusPlus
+	PUBLIC "${XPPLUSPLUS_INCLUDE_DIR}/XP++/DataAccess.hpp"
+	PUBLIC "${XPPLUSPLUS_INCLUDE_DIR}/XP++/DataAccess/DataRef.hpp"
+	PUBLIC "${XPPLUSPLUS_INCLUDE_DIR}/XP++/DataAccess/DataRefType.hpp"
+	PUBLIC "${XPPLUSPLUS_INCLUDE_DIR}/XP++/DataAccess/UserDataRef.hpp"
 	PUBLIC "${XPPLUSPLUS_INCLUDE_DIR}/XP++/Exceptions/NotImplementedException.hpp"
 	PUBLIC "${XPPLUSPLUS_INCLUDE_DIR}/XP++/Exceptions/XPException.hpp"
 	PUBLIC "${XPPLUSPLUS_INCLUDE_DIR}/XP++/UI/Menu.hpp"
 	PUBLIC "${XPPLUSPLUS_INCLUDE_DIR}/XP++/UI/MenuItem.hpp"
 	PUBLIC "${XPPLUSPLUS_INCLUDE_DIR}/XP++/UI/Menus.hpp"
 	PUBLIC "${XPPLUSPLUS_INCLUDE_DIR}/XP++/Planes.hpp"
+	PUBLIC "${XPPLUSPLUS_INCLUDE_DIR}/XP++/Processing.hpp"
 	PUBLIC "${XPPLUSPLUS_INCLUDE_DIR}/XP++/Message.hpp"
 	PUBLIC "${XPPLUSPLUS_INCLUDE_DIR}/XP++/UserPlugin.hpp"
 )
 
 # Add sources within this folder
 target_sources(XPPlusPlus
+	PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/DataAccess/DataRef.cpp"
+	PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/DataAccess/DataRefType.cpp"
+	PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/DataAccess/UserDataRef.cpp"
 	PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/UI/Menu.cpp"
 	PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/UI/MenuItem.cpp"
 	PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/Planes.cpp"
